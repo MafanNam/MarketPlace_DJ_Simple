@@ -6,7 +6,6 @@ from rest_framework import (
 )
 from rest_framework.permissions import (
     IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
 )
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
