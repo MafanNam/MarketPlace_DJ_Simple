@@ -48,9 +48,9 @@ INSTALLED_APPS = [
 
     # my app
     'accounts',
-    'store',
-    'cart',
-    'orders',
+    # 'store',
+    # 'cart',
+    # 'orders',
     'addons',
 
 ]
