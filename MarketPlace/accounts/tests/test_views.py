@@ -29,6 +29,19 @@ def create_user(first_name='test_first', last_name='test_last',
     return user
 
 
+def create_superuser(first_name='test_first', last_name='test_last',
+                     username='admin', email='admin@gmail.com',
+                     password='testpass123', phone_number='+343 2444 5345',
+                     is_active=False):
+    """Create and return a new user."""
+    user = get_user_model().objects.create_superuser(
+        first_name=first_name, last_name=last_name,
+        username=username, email=email, password=password,
+        phone_number=phone_number, is_active=is_active)
+    user.save()
+    return user
+
+
 class TestAuthenticationViews(TestSetUp):
 
     def test_user_login_with_jwt_token(self):

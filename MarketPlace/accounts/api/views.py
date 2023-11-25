@@ -194,7 +194,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         try:
-            user = UserProfile.objects.all().select_related('user').get(
+            user = UserProfile.objects.get(
                 user=self.request.user)
             return user
         except UserProfile.DoesNotExist:

@@ -3,21 +3,19 @@ import os
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
-from accounts.models import SellerShop, User
+from accounts.models import User
 
 
 def get_upload_path_main_product_image(instance, filename):
     return os.path.join(
-        "SellerShops",
-        "owner_%d" % instance.seller_shop.owner.id,
+        "owner_%d" % instance.owner.id,
         "Products", instance.product_name,
         "product_line_images", filename)
 
 
 def get_upload_path_product_image(instance, filename):
     return os.path.join(
-        "SellerShops",
-        "owner_%d" % instance.product.seller_shop.owner.id,
+        "owner_%d" % instance.product.owner.id,
         "Products", instance.product.product_name,
         "product_line_images", filename)
 
@@ -31,8 +29,11 @@ class ManagerQuerySet(models.QuerySet):
 
 class Product(models.Model):
     """Product model."""
+    owner = models.ForeignKey(
+        User, on_delete=models.SET_NULL,
+        blank=True, null=True, related_name='product')
     product_name = models.CharField(max_length=255)
-    slug = models.SlugField(db_index=True, unique=True, )
+    slug = models.SlugField(db_index=True, unique=True)
     description = models.TextField(max_length=500, blank=True)
     image = models.ImageField(
         upload_to=get_upload_path_main_product_image,
@@ -42,7 +43,6 @@ class Product(models.Model):
     brand = models.ForeignKey(
         'Brand', on_delete=models.SET('non brand'), blank=True)
     attribute_value = models.ManyToManyField('AttributeValue')
-    seller_shop = models.ForeignKey(SellerShop, on_delete=models.CASCADE)
     link_youtube = models.URLField(blank=True)
     article = models.CharField(max_length=50, unique=True, db_index=True)
     price_new = models.PositiveIntegerField()

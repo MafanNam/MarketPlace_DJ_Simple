@@ -21,7 +21,7 @@ from store.models import (
     Product, ReviewRating, Category,
     Brand, AttributeValue
 )
-from MarketPlace.core.permissions import IsAdminOrReadOnly, IsSellerOrReadOnly
+from MarketPlace.core.permissions import IsAdminOrReadOnly
 from store.api.paginations import ProductAPIListPagination
 
 
@@ -32,16 +32,16 @@ class ProductAPIView(viewsets.GenericViewSet,
     """CRUD for Product."""
     queryset = Product.objects.is_available().order_by(
         '-created_at').select_related(
-        'category', 'brand', 'seller_shop', 'seller_shop__owner__user_profile'
+        'category', 'brand', 'owner', 'owner__user_profile'
     )
     lookup_field = 'slug'
-    permission_classes = [IsSellerOrReadOnly]
+    permission_classes = [IsAdminOrReadOnly]
     pagination_class = ProductAPIListPagination
     filter_backends = (SearchFilter, OrderingFilter)
     search_fields = ('product_name', 'category__category_name',
-                     'brand__brand_name', 'seller_shop__shop_name')
+                     'brand__brand_name',)
     ordering_fields = ('product_name', 'category', 'brand',
-                       'attribute_value', 'seller_shop', 'price_new',
+                       'attribute_value', 'price_new',
                        'stock_qty', 'created_at',)
 
     def get_serializer_class(self):
@@ -123,7 +123,7 @@ class ProductReviewAPIView(generics.GenericAPIView):
                 {'error': 'Product does not exists.'},
                 status=status.HTTP_404_NOT_FOUND)
 
-        if user == product.seller_shop.owner:
+        if user == product.owner:
             return Response(
                 {'message': 'You can not reviewing own Product'},
                 status=status.HTTP_200_OK)

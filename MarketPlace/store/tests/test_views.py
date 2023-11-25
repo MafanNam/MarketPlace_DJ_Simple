@@ -2,8 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 
-from accounts.models import SellerShop
-from accounts.tests.test_views import create_user, fake
+from accounts.tests.test_views import create_user, create_superuser, fake
 from ..models import (
     Product, AttributeValue,
     Category, Brand, Attribute, ReviewRating,
@@ -24,11 +23,11 @@ def detail_review_url(product_slug):
 
 
 def create_product(
-        seller_shop, category, brand, attribute_value,
+        owner, category, brand, attribute_value,
         product_name='test_name',
         price_new=99, stock_qty=12):
     product = Product.objects.create(
-        seller_shop=seller_shop, product_name=product_name,
+        owner=owner, product_name=product_name,
         category=category, brand=brand,
         price_new=price_new, stock_qty=stock_qty)
     product.attribute_value.set([attribute_value])
@@ -52,28 +51,25 @@ class PublicStoreApiTests(TestCase):
 class PrivateStoreApiTests(TestCase):
 
     def setUp(self) -> None:
-        self.user_sel = create_user(
+        self.user_admin = create_superuser(
             username=fake.email().split('@')[0],
             email=fake.email(),
             is_active=True,
-            role=1,
         )
         self.user_cus = create_user(
             username=fake.email().split('@')[0],
             email=fake.email(),
             is_active=True,
-            role=2,
         )
         self.client = APIClient()
-        self.client.force_authenticate(user=self.user_sel)
-        self.seller_shop = SellerShop.objects.get(owner=self.user_sel)
+        self.client.force_authenticate(user=self.user_admin)
         self.category = Category.objects.create(category_name='test_cat1')
         self.brand = Brand.objects.create(brand_name='test_brand1')
         self.attribute = Attribute.objects.create(name='color')
         self.attribute_value = AttributeValue.objects.create(
             value='red', attribute=self.attribute)
         self.product = create_product(
-            seller_shop=self.seller_shop, category=self.category,
+            owner=self.user_admin, category=self.category,
             brand=self.brand, attribute_value=self.attribute_value
         )
 
@@ -94,7 +90,7 @@ class PrivateStoreApiTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         product = Product.objects.get(product_name=payload['product_name'])
-        self.assertTrue(product.seller_shop, self.seller_shop)
+        self.assertTrue(product.owner, self.user_admin)
         self.assertEqual(product.price_old, payload['price_new'])
 
     def test_product_update(self):
@@ -111,12 +107,12 @@ class PrivateStoreApiTests(TestCase):
         product = Product.objects.filter(product_name=payload['product_name'])
         self.assertTrue(product.exists())
         self.assertEqual(product[0].product_name, payload['product_name'])
-        self.assertTrue(product[0].seller_shop, self.seller_shop)
+        self.assertTrue(product[0].owner, self.user_admin)
         self.assertEqual(product[0].price_old, price_old)
 
     def test_product_delete(self):
         product = create_product(
-            seller_shop=self.seller_shop, category=self.category,
+            owner=self.user_admin, category=self.category,
             brand=self.brand, attribute_value=self.attribute_value,
             product_name='test_delete'
         )

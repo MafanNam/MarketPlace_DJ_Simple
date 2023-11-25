@@ -1,8 +1,8 @@
+from django.contrib.auth import get_user_model
+
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from accounts.api.serializers import SellerShopProfileSerializer
-from accounts.models import SellerShop
 from store.models import (
     Category, Brand, Product,
     AttributeValue, ProductImage, ReviewRating,
@@ -49,8 +49,8 @@ class ReviewRatingSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     category = serializers.CharField(source='category.category_name')
     brand = serializers.CharField(source='brand.brand_name')
-    seller_shop = serializers.CharField(
-        source='seller_shop.shop_name', read_only=True)
+    owner = serializers.CharField(
+        source='owner.username', read_only=True)
 
     class Meta:
         model = Product
@@ -63,7 +63,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     category = serializers.CharField(
         source='category.category_name', read_only=True)
     brand = serializers.CharField(source='brand.brand_name', read_only=True)
-    seller_shop = SellerShopProfileSerializer(many=False, read_only=True)
+    owner = serializers.CharField(source='owner.username', read_only=True)
     attribute_value = AttributeValueSerializer(many=True, read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
     review = serializers.SerializerMethodField(read_only=True)
@@ -98,7 +98,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             'price_old', 'article',
         )
         extra_kwargs = {
-            'seller_shop': {'read_only': True, 'required': False},
+            'owner': {'read_only': True, 'required': False},
             # 'image': {'required': True},
             'slug': {'read_only': True},
         }
@@ -107,8 +107,8 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         uploaded_images = validated_data.pop('uploaded_images', [])
 
-        seller_shop = SellerShop.objects.get(owner=request.user)
-        validated_data['seller_shop'] = seller_shop
+        owner = get_user_model().objects.get(id=request.user.id)
+        validated_data['owner'] = owner
         validated_data['price_old'] = validated_data['price_new']
         attribute_ids = validated_data['attribute_value']
 

@@ -1,7 +1,6 @@
 from django.test import TestCase
 
-from accounts.models import SellerShop
-from accounts.tests.test_views import fake, create_user
+from accounts.tests.test_views import fake, create_user, create_superuser
 from cart.models import Cart, CartItem
 from store.models import Category, Brand, Attribute, AttributeValue
 from store.tests.test_views import create_product
@@ -14,18 +13,16 @@ def create_cart(user):
 class CartTests(TestCase):
 
     def setUp(self) -> None:
-        self.user_sel = create_user(
+        self.user_admin = create_superuser(
             username=fake.email().split('@')[0],
             email=fake.email(),
             is_active=True,
-            role=1,
         )
         self.user_cus = create_user(
             username=fake.email().split('@')[0],
             email=fake.email(),
             is_active=True,
         )
-        self.seller_shop = SellerShop.objects.get(owner=self.user_sel)
         self.category = Category.objects.create(category_name='test_cat1')
         self.brand = Brand.objects.create(brand_name='test_brand1')
         self.attribute = Attribute.objects.create(name='color')
@@ -42,7 +39,7 @@ class CartTests(TestCase):
         cart = create_cart(user=self.user_cus)
 
         product = create_product(
-            seller_shop=self.seller_shop, category=self.category,
+            seller_shop=self.user_admin, category=self.category,
             brand=self.brand, attribute_value=self.attribute_value
         )
         cart_item = CartItem.objects.create(
@@ -60,7 +57,7 @@ class CartTests(TestCase):
         cart = create_cart(user=self.user_cus)
 
         product = create_product(
-            seller_shop=self.seller_shop, category=self.category,
+            seller_shop=self.user_admin, category=self.category,
             brand=self.brand, attribute_value=self.attribute_value
         )
         cart_item = CartItem.objects.create(
