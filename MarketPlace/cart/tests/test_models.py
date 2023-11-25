@@ -39,7 +39,7 @@ class CartTests(TestCase):
         cart = create_cart(user=self.user_cus)
 
         product = create_product(
-            seller_shop=self.user_admin, category=self.category,
+            owner=self.user_admin, category=self.category,
             brand=self.brand, attribute_value=self.attribute_value
         )
         cart_item = CartItem.objects.create(
@@ -57,7 +57,7 @@ class CartTests(TestCase):
         cart = create_cart(user=self.user_cus)
 
         product = create_product(
-            seller_shop=self.user_admin, category=self.category,
+            owner=self.user_admin, category=self.category,
             brand=self.brand, attribute_value=self.attribute_value
         )
         cart_item = CartItem.objects.create(

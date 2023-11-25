@@ -2,12 +2,11 @@ from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from ..models import UserProfile
+from accounts.models import UserProfile
 
 
 @receiver(post_save, sender=get_user_model())
 def post_save_create_profile_receiver(sender, instance, created, **kwargs):
-    user = sender.objects.get(id=instance.id)
     if created:
         UserProfile.objects.create(user=instance)
     else:

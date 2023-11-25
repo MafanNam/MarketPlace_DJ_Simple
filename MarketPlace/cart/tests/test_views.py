@@ -3,8 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from accounts.models import SellerShop
-from accounts.tests.test_views import create_user, fake
+from accounts.tests.test_views import create_user, create_superuser, fake
 from cart.models import (
     CartItem, Cart
 )
@@ -54,11 +53,10 @@ class PublicCartApiTests(TestCase):
 class PrivateCartApiTests(TestCase):
 
     def setUp(self) -> None:
-        self.user_sel = create_user(
+        self.user_admin = create_superuser(
             username=fake.email().split('@')[0],
             email=fake.email(),
             is_active=True,
-            role=1,
         )
         self.user_cus = create_user(
             username=fake.email().split('@')[0],
@@ -67,14 +65,13 @@ class PrivateCartApiTests(TestCase):
         )
         self.client = APIClient()
         self.client.force_authenticate(user=self.user_cus)
-        self.seller_shop = SellerShop.objects.get(owner=self.user_sel)
         self.category = Category.objects.create(category_name='test_cat1')
         self.brand = Brand.objects.create(brand_name='test_brand1')
         self.attribute = Attribute.objects.create(name='color')
         self.attribute_value = AttributeValue.objects.create(
             value='red', attribute=self.attribute)
         self.product = create_product(
-            seller_shop=self.seller_shop, category=self.category,
+            owner=self.user_admin, category=self.category,
             brand=self.brand, attribute_value=self.attribute_value
         )
         self.cart = create_cart(self.user_cus)
@@ -107,11 +104,11 @@ class PrivateCartApiTests(TestCase):
         self.assertEqual(res.data['quantity'], self.cart_item.quantity)
 
     def test_create_cart(self):
-        self.client.force_authenticate(self.user_sel)
+        self.client.force_authenticate(self.user_admin)
         res = self.client.post(CART_URL)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(res.data['user'], self.user_sel.id)
+        self.assertEqual(res.data['user'], self.user_admin.id)
 
     def test_create_cart_item(self):
         payload = {

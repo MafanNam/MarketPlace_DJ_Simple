@@ -8,12 +8,12 @@ from store.models import Product, AttributeValue
 
 
 class SimpleProductSerializer(serializers.ModelSerializer):
-    seller_shop = serializers.CharField(source='seller_shop.shop_name')
+    owner = serializers.CharField(source='owner.username')
 
     class Meta:
         model = Product
         fields = ('id', 'product_name', 'slug',
-                  'seller_shop', 'article', 'price_new')
+                  'owner', 'article', 'price_new')
 
 
 class CartItemSerializer(serializers.ModelSerializer):
