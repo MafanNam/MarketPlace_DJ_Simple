@@ -1,7 +1,6 @@
 from django.test import TestCase
 
-from accounts.models import SellerShop
-from accounts.tests.test_views import create_user, fake
+from accounts.tests.test_views import create_user, create_superuser, fake
 from store.models import (
     Product, AttributeValue,
     Category, Brand, Attribute,
@@ -12,11 +11,11 @@ from orders.models import (
 
 
 def create_product(
-        seller_shop, category, brand, attribute_value,
+        owner, category, brand, attribute_value,
         product_name='test_name', article='CD334',
         price_new=99, stock_qty=12):
     product = Product.objects.create(
-        seller_shop=seller_shop, product_name=product_name,
+        owner=owner, product_name=product_name,
         category=category, brand=brand,
         article=article, price_new=price_new, stock_qty=stock_qty)
     product.attribute_value.set([attribute_value])
@@ -35,25 +34,23 @@ def create_order(
 class OrderTests(TestCase):
 
     def setUp(self) -> None:
-        self.user_sel = create_user(
+        self.user_admin = create_superuser(
             username=fake.email().split('@')[0],
             email=fake.email(),
             is_active=True,
-            role=1,
         )
         self.user_cus = create_user(
             username=fake.email().split('@')[0],
             email=fake.email(),
             is_active=True,
         )
-        self.seller_shop = SellerShop.objects.get(owner=self.user_sel)
         self.category = Category.objects.create(category_name='test_cat1')
         self.brand = Brand.objects.create(brand_name='test_brand1')
         self.attribute = Attribute.objects.create(name='color')
         self.attribute_value = AttributeValue.objects.create(
             value='red', attribute=self.attribute)
         self.product = create_product(
-            seller_shop=self.seller_shop, category=self.category,
+            owner=self.user_admin, category=self.category,
             brand=self.brand, attribute_value=self.attribute_value
         )
 

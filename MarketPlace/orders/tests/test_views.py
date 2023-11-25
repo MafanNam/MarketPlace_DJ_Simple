@@ -4,8 +4,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from accounts.models import SellerShop, User
-from accounts.tests.test_views import create_user, fake
+from accounts.models import User
+from accounts.tests.test_views import create_user, create_superuser, fake
 from cart.tests.test_models import create_cart
 from cart.tests.test_views import create_cart_item
 from orders.api.serializers import OrderSerializer
@@ -24,11 +24,11 @@ def detail_order_url(order_id):
 
 
 def create_product(
-        seller_shop, category, brand, attribute_value,
+        owner, category, brand, attribute_value,
         product_name='test_name',
         price_new=99, stock_qty=12):
     product = Product.objects.create(
-        seller_shop=seller_shop, product_name=product_name,
+        owner=owner, product_name=product_name,
         category=category, brand=brand,
         price_new=price_new, stock_qty=stock_qty)
     product.attribute_value.set([attribute_value])
@@ -60,34 +60,30 @@ class PublicOrderApiTests(TestCase):
 class PrivateOrderApiTests(TestCase):
 
     def setUp(self) -> None:
-        self.user_sel = create_user(
+        self.user_admin = create_superuser(
             username=fake.email().split('@')[0],
             email=fake.email(),
             is_active=True,
-            role=1,
         )
         self.user_cus = create_user(
             username=fake.email().split('@')[0],
             email=fake.email(),
             is_active=True,
-            role=2,
         )
         self.user_cus2 = create_user(
             username=fake.email().split('@')[0],
             email=fake.email(),
             is_active=True,
-            role=2,
         )
         self.client = APIClient()
         self.client.force_authenticate(user=self.user_cus)
-        self.seller_shop = SellerShop.objects.get(owner=self.user_sel)
         self.category = Category.objects.create(category_name='test_cat1')
         self.brand = Brand.objects.create(brand_name='test_brand1')
         self.attribute = Attribute.objects.create(name='color')
         self.attribute_value = AttributeValue.objects.create(
             value='red', attribute=self.attribute)
         self.product = create_product(
-            seller_shop=self.seller_shop, category=self.category,
+            owner=self.user_admin, category=self.category,
             brand=self.brand, attribute_value=self.attribute_value
         )
         self.tax = Tax.objects.create(
@@ -96,7 +92,7 @@ class PrivateOrderApiTests(TestCase):
             user=self.user_cus, tax=self.tax, order_number='DD333')
         self.order_item = OrderItem.objects.create(
             order=self.order, product=self.product, quantity=5)
-        self.cart = create_cart(self.user_sel)
+        self.cart = create_cart(self.user_admin)
         self.cart_item = create_cart_item(
             cart=self.cart, product=self.product,
             attribute_value=self.attribute_value, quantity=2)
