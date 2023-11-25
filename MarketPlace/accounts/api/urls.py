@@ -16,8 +16,6 @@ app_name = 'accounts'
 urlpatterns = [
     # Auth
     path('register/', views.RegisterUserView.as_view(), name='register'),
-    path('register-seller-shop/', views.RegisterSellerShopView.as_view(),
-         name='register_seller_shop'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/blacklist/', TokenBlacklistView.as_view(),
@@ -41,8 +39,4 @@ urlpatterns = [
 
     # Profile
     path('profile/', views.UserProfileView.as_view(), name='profile'),
-
-    # Seller Shop
-    path('seller-shop-profile/', views.SellerShopProfileView.as_view(),
-         name='seller_shop_profile')
 ]

@@ -12,7 +12,7 @@ from django.utils.http import urlsafe_base64_decode
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 
-from ..models import UserProfile, SellerShop
+from ..models import UserProfile
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
@@ -65,35 +65,6 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         if password:
             user.set_password(password)
             user.save()
-
-        return user
-
-
-class RegisterSellerShopUserSerializer(RegisterUserSerializer):
-
-    def save(self, **kwargs):
-        """Save user and check valid password"""
-        password = self.validated_data['password']
-        password2 = self.validated_data['password2']
-
-        if password != password2:
-            raise serializers.ValidationError(
-                {'error': 'P1 and P2 should be same.'})
-
-        if get_user_model().objects.filter(
-                email=self.validated_data['email']).exists():
-            raise serializers.ValidationError(
-                {'error': 'Email already exists.'})
-
-        user = get_user_model().objects.create_user(
-            email=self.validated_data['email'], password=password,
-            username=self.validated_data['username'],
-            first_name=self.validated_data['first_name'],
-            last_name=self.validated_data['last_name'],
-            phone_number=self.validated_data['phone_number'],
-            role=1)
-        user.set_password(password)
-        user.save()
 
         return user
 
@@ -162,9 +133,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ('id', 'first_name', 'last_name', 'username', 'email',
-                  'phone_number', 'role', 'is_active')
-        extra_kwargs = {'role': {'read_only': True},
-                        'is_active': {'read_only': True}}
+                  'phone_number', 'is_active')
+        extra_kwargs = {'is_active': {'read_only': True}}
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -181,12 +151,3 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
         nested_serializer.update(nested_instance, nested_data)
         return super().update(instance, validated_data)
-
-
-class SellerShopProfileSerializer(serializers.ModelSerializer):
-    owner = serializers.EmailField(source='owner.email', read_only=True)
-
-    class Meta:
-        model = SellerShop
-        exclude = ('id',)
-        extra_kwargs = {'slug': {'read_only': True}}

@@ -24,9 +24,8 @@ from .serializers import (
     RegisterUserSerializer, UserSerializer, UserProfileSerializer,
     ResetPasswordEmailSerializer, SetNewPasswordSerializer,
     EmailVerificationSerializer, PasswordTokenCheckSerializer,
-    SellerShopProfileSerializer, RegisterSellerShopUserSerializer,
 )
-from ..models import UserProfile, SellerShop
+from ..models import UserProfile
 from .utils import Util
 
 
@@ -59,11 +58,6 @@ class RegisterUserView(generics.GenericAPIView):
         Util.send_verification_email(data)
 
         return Response(user_data, status=status.HTTP_201_CREATED)
-
-
-class RegisterSellerShopView(RegisterUserView):
-    """Create(register) a new Seller Shop user in the system."""
-    serializer_class = RegisterSellerShopUserSerializer
 
 
 class VerifyEmail(APIView):
@@ -205,20 +199,4 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
             return user
         except UserProfile.DoesNotExist:
             return Response({'error': 'You are not customer.'},
-                            status=status.HTTP_404_NOT_FOUND)
-
-
-@extend_schema(tags=['SellerShopProfile'])
-class SellerShopProfileView(generics.RetrieveUpdateAPIView):
-    """User Profile view for auth user"""
-    serializer_class = SellerShopProfileSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self):
-        try:
-            seller_shop = SellerShop.objects.all().select_related('owner').get(
-                owner=self.request.user)
-            return seller_shop
-        except SellerShop.DoesNotExist:
-            return Response({'error': 'You are not seller.'},
                             status=status.HTTP_404_NOT_FOUND)

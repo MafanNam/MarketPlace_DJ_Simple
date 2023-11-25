@@ -14,18 +14,17 @@ from ..models import UserProfile
 fake = Faker()
 
 PROFILE_URL = reverse('accounts:profile')
-SELLER_SHOP_URL = reverse('accounts:seller_shop_profile')
 
 
 def create_user(first_name='test_first', last_name='test_last',
                 username='tests', email='test@gmail.com',
                 password='testpass123', phone_number='+343 2424 5345',
-                is_active=False, role=2):
+                is_active=False):
     """Create and return a new user."""
     user = get_user_model().objects.create_user(
         first_name=first_name, last_name=last_name,
         username=username, email=email, password=password,
-        phone_number=phone_number, is_active=is_active, role=role)
+        phone_number=phone_number, is_active=is_active)
     user.save()
     return user
 
@@ -94,11 +93,6 @@ class PublicUserApiTests(TestSetUp):
 
     def test_user_profile_retrieve_unauthorized(self):
         res = self.client.get(PROFILE_URL)
-
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_seller_shop_profile_retrieve_unauthorized(self):
-        res = self.client.get(SELLER_SHOP_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
