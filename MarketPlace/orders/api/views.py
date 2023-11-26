@@ -1,13 +1,11 @@
-# from drf_spectacular.utils import extend_schema
-
 from django.utils.timezone import now
+
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
 
 from orders.api.paginations import OrderAPIListPagination
-
 from orders.api.serializers import (
     OrderSerializer, CreateOrderSerializer,
     UpdateOrderSerializer)
@@ -77,3 +75,25 @@ class OrderPayViewSet(viewsets.views.APIView):
             return Response({'error': 'Order already paid.'})
 
         return Response('Order was paid.')
+
+
+class OrderDeliverViewSet(viewsets.views.APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = None
+
+    def patch(self, request, pk=None):
+        try:
+            order = Order.objects.get(
+                pk=pk, user=self.request.user)
+        except Order.DoesNotExist:
+            return Response(
+                {'error': 'Order with this id does not exist.'},
+                status=status.HTTP_404_NOT_FOUND)
+        if not order.is_delivered:
+            order.is_delivered = True
+            order.delivered_at = now()
+            order.save()
+        else:
+            return Response({'error': 'Order already delivered.'})
+
+        return Response('Order was delivered.')
