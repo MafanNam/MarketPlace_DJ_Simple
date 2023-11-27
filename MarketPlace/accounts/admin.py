@@ -9,8 +9,9 @@ from .models import User, UserProfile
 class UserAdmin(UserAdmin):
     """Define the admin pages for users."""
     model = User
-    list_display = ("username",
-        "email", "first_name", "last_name", "is_active", "is_staff",)
+    list_display = (
+        "username", "email", "first_name", "last_name",
+        "is_active", "is_staff",)
     list_filter = ("email", "is_staff", "is_active")
     fieldsets = (
         (None, {"fields": ("email", "password", "first_name",

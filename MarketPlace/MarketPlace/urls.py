@@ -9,9 +9,6 @@ from drf_spectacular.views import (
     SpectacularRedocView
 )
 
-from accounts.api import views
-
-
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -20,12 +17,6 @@ urlpatterns = [
     path('api/products/', include('store.api.urls')),
     path('api/carts/', include('cart.api.urls')),
     path('api/orders/', include('orders.api.urls')),
-
-    # Rest-Auth
-    # path('dj-rest-auth/', include('dj_rest_auth.urls')),
-    # path('dj-rest-auth/facebook/', views.FacebookLogin.as_view(), name='fb_login'),
-    path('dj-rest-auth/google/', views.GoogleLogin.as_view(), name='google_login'),
-    path('dj-rest-auth/facebook/', views.FacebookLogin.as_view(), name='fb_login'),
 
     # ADDONS
     path('api/addons/', include('addons.api.urls')),

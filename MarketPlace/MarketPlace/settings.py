@@ -38,17 +38,8 @@ INSTALLED_APPS = [
     # additional
     "debug_toolbar",
     'rest_framework',
-    'rest_framework.authtoken',
     'rest_framework_simplejwt.token_blacklist',
-    'dj_rest_auth',
     'drf_spectacular',
-
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.google',
-    # 'allauth.socialaccount.providers.twitter',
 
     # my app
     'accounts',
@@ -57,24 +48,6 @@ INSTALLED_APPS = [
     'orders',
     'addons',
 ]
-
-# SOCIALACCOUNT_PROVIDERS = {
-#     "google": {
-#         "APP": {
-#             "client_id": "<842279171703-7bssebc8fqtet6u4bdrn2imo3vj38flq.apps.googleusercontent.com>",  # replace me
-#             "secret": "<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>",        # replace me
-#             "key": "",                               # leave empty
-#         },
-#         "SCOPE": [
-#             "profile",
-#             "email",
-#         ],
-#         "AUTH_PARAMS": {
-#             "access_type": "online",
-#         },
-#         "VERIFIED_EMAIL": True,
-#     },
-# }
 
 SITE_ID = 1
 
@@ -89,7 +62,6 @@ MIDDLEWARE = [
 
     # additional
     "debug_toolbar.middleware.DebugToolbarMiddleware",
-    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = 'MarketPlace.urls'
@@ -174,16 +146,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 
-}
-
-REST_AUTH = {
-    'USE_JWT': True,
-    'JWT_AUTH_COOKIE': 'my-app-auth',
-    'JWT_AUTH_REFRESH_COOKIE': 'my-refresh-token',
 }
 
 SPECTACULAR_SETTINGS = {

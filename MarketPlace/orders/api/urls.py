@@ -11,7 +11,8 @@ router.register('', views.OrderViewSet, basename='orders')
 
 urlpatterns = [
     path('<int:pk>/pay/', views.OrderPayViewSet.as_view(), name='order_pay'),
-    path('<int:pk>/deliver/', views.OrderDeliverViewSet.as_view(), name='order_deliver'),
+    path('<int:pk>/deliver/', views.OrderDeliverViewSet.as_view(),
+         name='order_deliver'),
     path('', include(router.urls)),
 
 ]
