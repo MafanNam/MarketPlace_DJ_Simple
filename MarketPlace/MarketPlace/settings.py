@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google',
     # 'allauth.socialaccount.providers.twitter',
 
     # my app
@@ -55,8 +56,25 @@ INSTALLED_APPS = [
     'cart',
     'orders',
     'addons',
-    'social_auth',
 ]
+
+# SOCIALACCOUNT_PROVIDERS = {
+#     "google": {
+#         "APP": {
+#             "client_id": "<842279171703-7bssebc8fqtet6u4bdrn2imo3vj38flq.apps.googleusercontent.com>",  # replace me
+#             "secret": "<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>",        # replace me
+#             "key": "",                               # leave empty
+#         },
+#         "SCOPE": [
+#             "profile",
+#             "email",
+#         ],
+#         "AUTH_PARAMS": {
+#             "access_type": "online",
+#         },
+#         "VERIFIED_EMAIL": True,
+#     },
+# }
 
 SITE_ID = 1
 
@@ -159,8 +177,6 @@ REST_FRAMEWORK = {
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    # 'PAGE_SIZE': 3,
 
 }
 
@@ -187,8 +203,6 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": True,
 }
-
-# REST_USE_JWT = True
 
 
 # EMAIL conf

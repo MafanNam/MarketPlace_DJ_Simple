@@ -1,3 +1,4 @@
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.sites.shortcuts import get_current_site
@@ -28,12 +29,18 @@ from .serializers import (
 from ..models import UserProfile
 from .utils import Util
 
-from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
-from dj_rest_auth.registration.views import SocialLoginView
 
+from dj_rest_auth.registration.views import SocialLoginView
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 
 class FacebookLogin(SocialLoginView):
     adapter_class = FacebookOAuth2Adapter
+
+class GoogleLogin(SocialLoginView):
+    adapter_class = GoogleOAuth2Adapter
+    callback_url = "http://localhost:3000/"
+    client_class = OAuth2Client
 
 
 class RegisterUserView(generics.GenericAPIView):

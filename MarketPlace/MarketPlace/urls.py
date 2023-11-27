@@ -11,6 +11,7 @@ from drf_spectacular.views import (
 
 from accounts.api import views
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -23,8 +24,8 @@ urlpatterns = [
     # Rest-Auth
     # path('dj-rest-auth/', include('dj_rest_auth.urls')),
     # path('dj-rest-auth/facebook/', views.FacebookLogin.as_view(), name='fb_login'),
-    path('social_auth/', include(('social_auth.api.urls', 'social_auth'),
-                                 namespace='social_auth')),
+    path('dj-rest-auth/google/', views.GoogleLogin.as_view(), name='google_login'),
+    path('dj-rest-auth/facebook/', views.FacebookLogin.as_view(), name='fb_login'),
 
     # ADDONS
     path('api/addons/', include('addons.api.urls')),
