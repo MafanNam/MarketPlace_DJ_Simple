@@ -10,6 +10,7 @@ from django.contrib.auth.models import (
 )
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class UserManager(BaseUserManager):
@@ -43,6 +44,9 @@ class UserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
+AUTH_PROVIDERS = {'facebook': 'facebook', 'google': 'google',
+                  'twitter': 'twitter', 'email': 'email',}
+
 class User(AbstractBaseUser, PermissionsMixin):
     """User model"""
 
@@ -51,6 +55,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=50, unique=True)
     email = models.EmailField(max_length=100, unique=True)
     phone_number = models.CharField(max_length=50, blank=True)
+    auth_provider = models.CharField(
+        max_length=255, blank=False, null=False,
+        default=AUTH_PROVIDERS.get('email'))
 
     # additional fields
     is_staff = models.BooleanField(default=False)
@@ -67,6 +74,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_full_name(self):
         return f"{self.first_name.title()} {self.last_name.title()}"
+
+    def tokens(self):
+        refresh = RefreshToken.for_user(self)
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
 
 
 def get_upload_path_profile(instance, filename):

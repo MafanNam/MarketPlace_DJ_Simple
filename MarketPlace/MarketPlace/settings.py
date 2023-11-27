@@ -22,7 +22,7 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = []
 
-INTERNAL_IPS = ('127.0.0.1', '0.0.0.0', 'localhost',)
+INTERNAL_IPS = ('localhost', '127.0.0.1', '0.0.0.0',)
 
 # Application definition
 
@@ -33,12 +33,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     # additional
     "debug_toolbar",
     'rest_framework',
+    'rest_framework.authtoken',
     'rest_framework_simplejwt.token_blacklist',
+    'dj_rest_auth',
     'drf_spectacular',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+    # 'allauth.socialaccount.providers.twitter',
 
     # my app
     'accounts',
@@ -46,8 +55,10 @@ INSTALLED_APPS = [
     'cart',
     'orders',
     'addons',
-
+    'social_auth',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -60,6 +71,7 @@ MIDDLEWARE = [
 
     # additional
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = 'MarketPlace.urls'
@@ -81,6 +93,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'MarketPlace.wsgi.application'
+
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -143,11 +156,18 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     # 'PAGE_SIZE': 3,
 
+}
+
+REST_AUTH = {
+    'USE_JWT': True,
+    'JWT_AUTH_COOKIE': 'my-app-auth',
+    'JWT_AUTH_REFRESH_COOKIE': 'my-refresh-token',
 }
 
 SPECTACULAR_SETTINGS = {
@@ -167,6 +187,9 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": True,
 }
+
+# REST_USE_JWT = True
+
 
 # EMAIL conf
 

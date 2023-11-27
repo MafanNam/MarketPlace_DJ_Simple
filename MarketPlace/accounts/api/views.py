@@ -28,6 +28,13 @@ from .serializers import (
 from ..models import UserProfile
 from .utils import Util
 
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
+from dj_rest_auth.registration.views import SocialLoginView
+
+
+class FacebookLogin(SocialLoginView):
+    adapter_class = FacebookOAuth2Adapter
+
 
 class RegisterUserView(generics.GenericAPIView):
     """Create(register) a new user in the system."""
