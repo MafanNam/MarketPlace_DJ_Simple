@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 
 from drf_spectacular.views import (
     SpectacularAPIView,
@@ -18,6 +18,7 @@ urlpatterns = [
     path('api/carts/', include('cart.api.urls')),
     path('api/orders/', include('orders.api.urls')),
 
+    re_path(r'^auth/', include('drf_social_oauth2.urls', namespace='drf')),
 
     # ADDONS
     path('api/addons/', include('addons.api.urls')),

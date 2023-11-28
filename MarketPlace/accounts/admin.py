@@ -10,7 +10,8 @@ class UserAdmin(UserAdmin):
     """Define the admin pages for users."""
     model = User
     list_display = (
-        "email", "first_name", "last_name", "is_active", "is_staff",)
+        "username", "email", "first_name", "last_name",
+        "is_active", "is_staff",)
     list_filter = ("email", "is_staff", "is_active")
     fieldsets = (
         (None, {"fields": ("email", "password", "first_name",
