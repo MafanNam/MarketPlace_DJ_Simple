@@ -80,12 +80,14 @@ class PrivateStoreApiTests(TestCase):
 
     def test_product_create(self):
         payload = {
-            'product_name': 'hh',
-            'category': 1, 'brand': 1,
-            'attribute_value': [1],
+            'product_name': 'hh2',
+            'category': self.category.id,
+            'brand': self.brand.id,
+            'attribute_value': [self.attribute_value.id],
             'price_new': 5,
             'stock_qty': 12,
         }
+
         res = self.client.post(PRODUCT_URL, payload, format='json')
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
