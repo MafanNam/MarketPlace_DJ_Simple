@@ -56,7 +56,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         exclude = (
             'id', 'description', 'link_youtube', 'article',
-            'stock_qty', 'created_at', 'updated_at', 'attribute_value')
+            'created_at', 'updated_at', 'attribute_value')
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
@@ -99,7 +99,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         )
         extra_kwargs = {
             'owner': {'read_only': True, 'required': False},
-            # 'image': {'required': True},
+            # 'image': {'required': False},
             'slug': {'read_only': True},
         }
 

@@ -43,7 +43,7 @@ class CartTests(TestCase):
             brand=self.brand, attribute_value=self.attribute_value
         )
         cart_item = CartItem.objects.create(
-            cart=cart, product=product, attribute_value_id=1,
+            cart=cart, product=product, attribute_value=self.attribute_value,
             quantity=3)
 
         self.assertEqual(

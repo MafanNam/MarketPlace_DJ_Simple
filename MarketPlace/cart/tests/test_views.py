@@ -112,9 +112,9 @@ class PrivateCartApiTests(TestCase):
 
     def test_create_cart_item(self):
         payload = {
-            'product': 1,
+            'product': self.product.id,
             'quantity': 4,
-            'attribute_value': 1
+            'attribute_value': self.attribute.id
         }
         res = self.client.post(list_cart_items_url(self.cart.id), payload)
 
